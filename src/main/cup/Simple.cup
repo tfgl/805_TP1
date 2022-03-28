@@ -40,23 +40,30 @@ parser code {:
 :};
 
 /* symboles terminaux */
-terminal NOMBRE, ADD, SUB, DIV, MUL, POINT, LPAR, RPAR;
+terminal ADD, SUB, DIV, MUL, MOD, POINT, LPAR, RPAR;
+terminal Integer NOMBRE;
 terminal ERROR;
 
 /* non terminaux */
-non terminal operation , texte;
+non terminal operation_l;
+non terminal Integer operation;
 
 /* grammaire */
 
-texte   ::= operation texte 
-          | operation ; 
+precedence left ADD, SUB;
+precedence left MOD;
+precedence left MUL, DIV;
 
-operation  ::= NOMBRE:a ADD NOMBRE:b {: RESULT = ((Integer)a).intValue() + ((Integer)b).intValue(); System.out.println(RESULT); :} POINT 
-          | NOMBRE:a SUB NOMBRE:b {: RESULT = ((Integer)a).intValue() - ((Integer)b).intValue(); System.out.println(RESULT); :} POINT
-          | NOMBRE:a DIV NOMBRE:b {: RESULT = ((Integer)a).intValue() / ((Integer)b).intValue(); System.out.println(RESULT); :} POINT
-          | NOMBRE:a MUL NOMBRE:b {: RESULT = ((Integer)a).intValue() * ((Integer)b).intValue(); System.out.println(RESULT); :} POINT
-          | NOMBRE
-          | error POINT 
-          ;
+operation_l ::= operation_l operation:o     {: System.out.println(o); :} POINT
+              | operation:o                 {: System.out.println(o); :} POINT
+              | error:e
+              ; 
 
-
+operation   ::= operation:a ADD operation:b {: RESULT = a + b; :}
+              | operation:a SUB operation:b {: RESULT = a - b; :}
+              | operation:a DIV operation:b {: RESULT = a / b; :}
+              | operation:a MUL operation:b {: RESULT = a * b; :}
+              | operation:a MOD operation:b {: RESULT = a % b; :}
+              | LPAR operation:o RPAR       {: RESULT = o;     :}
+              | NOMBRE:n                    {: RESULT = n;     :}
+              ;
