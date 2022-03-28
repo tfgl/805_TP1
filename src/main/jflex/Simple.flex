@@ -23,21 +23,30 @@ import java_cup.runtime.Symbol;
 %}
 
 /* definitions regulieres */
-il      =   "Il"|"il"
-elle    =   "Elle"|"elle" 
-pronom  =   {il}|{elle}
-verbe   =   "est"|"boit"
-adj     =   "vite"|"beau"|"belle"|"bien"|"chaud"
+chiffre =   [0-9]
+neg     =   "-"
+nombre  =   {neg}?{chiffre}+
+add    =  "+"
+sub    =  "-"
+div    =  "/"
+mul    =  "*"
 sep     =   \s
-point   =   [.?!;]
+point   =   ";"
+lpar = "("
+rpar = ")"
 
 %% 
 /* ------------------------Section des Regles Lexicales----------------------*/
 
 /* regles */
 {sep}+          { /* pas d'action */ }
-{pronom}        { return new Symbol(SimpleParserSym.PRONOM, yyline, yycolumn); }
-{verbe}         { return new Symbol(SimpleParserSym.VERBE, yyline, yycolumn); }
-{adj}           { return new Symbol(SimpleParserSym.ADJECTIF, yyline, yycolumn); }
+{nombre}        { return new Symbol(SimpleParserSym.NOMBRE, yyline, yycolumn, Integer.valueOf( yytext() )); }
+{add}          { return new Symbol(SimpleParserSym.ADD, yyline, yycolumn); }
+{sub}          { return new Symbol(SimpleParserSym.SUB, yyline, yycolumn); }
+{div}          { return new Symbol(SimpleParserSym.DIV, yyline, yycolumn); }
+{mul}          { return new Symbol(SimpleParserSym.MUL, yyline, yycolumn); }
+{lpar}         { return new Symbol(SimpleParserSym.RPAR, yyline, yycolumn); }
+{rpar}         { return new Symbol(SimpleParserSym.LPAR, yyline, yycolumn); }
 {point}         { return new Symbol(SimpleParserSym.POINT, yyline, yycolumn); }
 .               { return new Symbol(SimpleParserSym.ERROR, yyline, yycolumn); }
+
